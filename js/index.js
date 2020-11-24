@@ -24,23 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const forwardBtn = document.getElementById("forward");
 
   //Make fetch with get
-  const getMonsters = (start) => {
-    fetch(monstersUrl)
+  const getMonsters = (page) => {
+    //if (page < 1 || page > Math.floor(monsters.length / 50) + 1) {
+    // window.alert("Here there not be drragons!");
+    //} else {
+    fetch(monstersUrl + `?_limit=50&_page=${page}`)
       .then((res) => res.json())
-      .then((monsters) => filterMonstes(monsters, start));
+      .then((monsters) => filterMonsters(monsters))
+      .catch((error) => window.alert("Here there not be drragons!"));
+    //}
   };
 
   //Show first 50 monsters
-  const filterMonstes = (monsters, start) => {
-    if (start < 0 || start > monsters.length) {
-      window.alert("Here there not be drragons!");
-    } else {
-      monsterDiv.innerHTML = "";
+  const filterMonsters = (monsters) => {
+    monsterDiv.innerHTML = "";
 
-      let total = start + 50;
-      for (let i = start; i < total; i++) {
-        renderMonster(monsters[i]);
-      }
+    //let total = start + 50;
+    //for (let i = start; i < total; i++) {
+    for (const monster of monsters) {
+      renderMonster(monster);
     }
   };
 
@@ -62,12 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
   //add button to end of list that will show the next 50 monsters
   const goforward = () => {
     const lastId = +monsterDiv.lastChild.dataset.id;
-    getMonsters(lastId);
+    const page = Math.floor(lastId / 50) + 2;
+    getMonsters(page);
   };
 
   const goback = () => {
     const firstId = +monsterDiv.firstChild.dataset.id;
-    getMonsters(firstId - 50);
+    const page = Math.floor(firstId / 50) - 1;
+    getMonsters(page);
   };
 
   const addMonster = (e) => {
@@ -97,5 +101,5 @@ document.addEventListener("DOMContentLoaded", () => {
   forwardBtn.addEventListener("click", goforward);
   form.addEventListener("submit", addMonster);
 
-  getMonsters(0);
+  getMonsters(1);
 });
